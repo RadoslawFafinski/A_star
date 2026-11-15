@@ -60,11 +60,15 @@ int main()
     openList[startRow][startCol] = true;
     discoveryOrder[startRow][startCol] = discoveryCounter++;
 
+    int currentRow = -1;
+    int currentCol = -1;
+    double bestF;
+    int bestDiscoveryOrder;
+
     ifstream file("grid.txt");
 
     if (!file.is_open())
     {
-        // Pathfinding cannot start without the input map.
         cout << "Cannot open grid.txt." << endl;
         return 1;
     }
@@ -79,6 +83,139 @@ int main()
     }
 
     file.close();
+
+    while (true)
+    {
+        currentRow = -1;
+        currentCol = -1;
+        bestF = 999999;
+        bestDiscoveryOrder = -1;
+
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                if (openList[i][j])
+                {
+                    double f = gCost[i][j] + calculateDistance(i, j, goalRow, goalCol);
+
+                    if (f < bestF || (f == bestF && discoveryOrder[i][j] > bestDiscoveryOrder))
+                    {
+                        bestF = f;
+                        bestDiscoveryOrder = discoveryOrder[i][j];
+                        currentRow = i;
+                        currentCol = j;
+                    }
+                }
+            }
+        }
+
+        if (currentRow == -1)
+        {
+            break;
+        }
+
+        openList[currentRow][currentCol] = false;
+        closedList[currentRow][currentCol] = true;
+
+        if (currentRow + 1 < 20) // UP movement
+        {
+            int neighborRow = currentRow + 1;
+            int neighborCol = currentCol;
+
+            if (grid[neighborRow][neighborCol] != 5 &&
+                !closedList[neighborRow][neighborCol])
+            {
+                int newG = gCost[currentRow][currentCol] + 1;
+
+                if (newG < gCost[neighborRow][neighborCol])
+                {
+                    gCost[neighborRow][neighborCol] = newG;
+                    parentRow[neighborRow][neighborCol] = currentRow;
+                    parentCol[neighborRow][neighborCol] = currentCol;
+
+                    if (!openList[neighborRow][neighborCol]) // if neighbor is not in the open list
+                    {
+                        openList[neighborRow][neighborCol] = true;
+                        discoveryOrder[neighborRow][neighborCol] = discoveryCounter++;
+                    }
+                }
+            }
+        }
+
+        if (currentRow - 1 >= 0) // DOWN movement
+        {
+            int neighborRow = currentRow - 1;
+            int neighborCol = currentCol;
+
+            if (grid[neighborRow][neighborCol] != 5 &&
+                !closedList[neighborRow][neighborCol])
+            {
+                int newG = gCost[currentRow][currentCol] + 1;
+
+                if (newG < gCost[neighborRow][neighborCol])
+                {
+                    gCost[neighborRow][neighborCol] = newG;
+                    parentRow[neighborRow][neighborCol] = currentRow;
+                    parentCol[neighborRow][neighborCol] = currentCol;
+
+                    if (!openList[neighborRow][neighborCol])
+                    {
+                        openList[neighborRow][neighborCol] = true;
+                        discoveryOrder[neighborRow][neighborCol] = discoveryCounter++;
+                    }
+                }
+            }
+        }
+        if(currentCol-1 >= 0) // LEFT movement
+        {
+            int neighborRow = currentRow;
+            int neighborCol = currentCol - 1;
+
+            if (grid[neighborRow][neighborCol] != 5 &&
+                !closedList[neighborRow][neighborCol])
+            {
+                int newG = gCost[currentRow][currentCol] +1;
+
+                if(newG < gCost[neighborRow][neighborCol])
+                {
+                    gCost[neighborRow][neighborCol] = newG;
+                    parentRow[neighborRow][neighborCol] = currentRow;
+                    parentCol[neighborRow][neighborCol] = currentCol;
+
+                    if (!openList[neighborRow][neighborCol])
+                    {
+                        openList[neighborRow][neighborCol] = true;
+                        discoveryOrder[neighborRow][neighborCol] = discoveryCounter++;
+                    }
+                }
+            }
+        }
+        if(currentCol+1 < 20) // RIGHT movement
+        {
+            int neighborRow = currentRow;
+            int neighborCol = currentCol + 1;
+
+            if (grid[neighborRow][neighborCol] != 5 &&
+                !closedList[neighborRow][neighborCol])
+            {
+                int newG = gCost[currentRow][currentCol] +1;
+
+                if(newG < gCost[neighborRow][neighborCol])
+                {
+                    gCost[neighborRow][neighborCol] = newG;
+                    parentRow[neighborRow][neighborCol] = currentRow;
+                    parentCol[neighborRow][neighborCol] = currentCol;
+
+                    if (!openList[neighborRow][neighborCol])
+                    {
+                        openList[neighborRow][neighborCol] = true;
+                        discoveryOrder[neighborRow][neighborCol] = discoveryCounter++;
+                    }
+                }
+            }
+        }
+    }
 
     // Display the loaded map to verify the input before running A*.
     for (int i = 19; i >= 0; i--)

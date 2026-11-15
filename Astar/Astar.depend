@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1794745495 source:d:\github\a_star\astar\main.cpp
+	<iostream>
+	<fstream>
+	<cmath>
+
